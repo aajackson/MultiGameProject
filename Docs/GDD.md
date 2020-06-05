@@ -28,7 +28,8 @@ Winners advance more
 2. Race to the finish - car or platforming race that swaps to minigames at set intervals. Winners get stat/speed boosts
 3. Collectathon - Platforming collect the coins, minigames are events that occur in the main play space similar to Air Ride
 
-
+Other ideas
+1. 3DS Mii Plaza games - Turn-based RPG combat, space combat sim, 
 
 ### Mini Games
 
