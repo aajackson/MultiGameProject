@@ -54,14 +54,20 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         // Initialize and spawn the block prefabs
+        StartCoroutine(SpawnInitialBlocks());
+    }
+
+    IEnumerator SpawnInitialBlocks()
+    {
         Vector3 currentPos = this.transform.position;
         for (int y = 0; y < boardHeight; y++)
         {
             for (int x = 0; x < boardWidth; x++)
             {
                 Vector3 blockPosition = new Vector3(x, y, 0) + currentPos;
-                //blockBoard[x, y] = Instantiate(BlockPrefab, blockPosition, Quaternion.identity, this.transform);
-                //blockBoard[x, y].GetComponent<MeshRenderer>().material = BlockMaterials.GetRandomItem();
+                blockBoard[x, y] = Instantiate(BlockPrefab, blockPosition, Quaternion.identity, this.transform);
+                blockBoard[x, y].GetComponent<MeshRenderer>().material = BlockMaterials.GetRandomItem();
+                yield return null;
             }
         }
     }
