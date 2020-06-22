@@ -62,9 +62,6 @@
                 // 0 -> _EdgePercent = _EdgeColor
                 // _EdgePercent -> 1 - _EdgePercent = _BaseColor
                 // 1 - _EdgePercent -> 1.0 = _EdgeColor
-
-                
-                fixed modifier = floor(sin(i.uv.x) * 2);
                 fixed offset = _EdgePercent * 4.0 - 1.0;
                 fixed u_mod = floor(abs(i.uv.x * 4.0 - 2.0) + offset);
                 fixed v_mod = floor(abs(i.uv.y * 4.0 - 2.0) + offset);
