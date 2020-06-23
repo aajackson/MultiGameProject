@@ -5,14 +5,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.Extensions
+public static class ListExtensions
 {
-    public static class ListExtensions
+    public static T GetRandomItem<T>(this List<T> list)
     {
-        public static T GetRandomItem<T>(this List<T> list)
-        {
-            int randomIndex = (int)(UnityEngine.Random.value * list.Count);
-            return list[randomIndex];
-        }
+        int randomIndex = (int)(UnityEngine.Random.value * list.Count);
+        return list[randomIndex];
     }
 }

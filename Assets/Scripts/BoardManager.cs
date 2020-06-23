@@ -1,42 +1,34 @@
-﻿using Assets.Scripts.Extensions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class BoardManager : MonoBehaviour
 {
-    public GameObject BlockPrefab = null;
-    public List<Material> BlockMaterials = new List<Material>();
     public GameObject Cursor = null;
-    public Vector2 CursorPosition
+    public Vector2Int CursorPosition
     {
         get { return cursorPosition; }
         set
         {
             if (value.x < 0)
                 value.x = 0;
-            if (value.x > boardWidth - 2)
-                value.x = boardWidth - 2;
+            if (value.x > GameBoard.boardWidth - 2)
+                value.x = GameBoard.boardWidth - 2;
             if (value.y < 0)
                 value.y = 0;
-            if (value.y > boardHeight - 1)
-                value.y = boardHeight - 1;
+            if (value.y > GameBoard.boardHeight - 1)
+                value.y = GameBoard.boardHeight - 1;
 
             cursorPosition = value;
 
             if (Cursor != null)
             {
-                Cursor.transform.localPosition = cursorPosition;
+                Cursor.transform.localPosition = new Vector3(cursorPosition.x, cursorPosition.y, Cursor.transform.localPosition.z);
             }
         }
     }
+    private Vector2Int cursorPosition = new Vector2Int(0, 0); // Max (boardWidth - 1, boardHeight - 1)
 
-    private const int boardWidth = 5;
-    private const int boardHeight = 12;
-    private GameObject[,] blockBoard = new GameObject[boardWidth, boardHeight];
-    private Vector2 cursorPosition = new Vector2(0,0); // Max (boardWidth - 1, boardHeight - 1)
+    public Board GameBoard = null;
 
 
 
@@ -45,7 +37,7 @@ public class BoardManager : MonoBehaviour
         // Draw a semitransparent blue cube at the transforms position
         Gizmos.color = new Color(0.45f, 0.45f, 0.55f, 0.5f);
         float blockPrefabWidth = 1.0f;
-        Vector3 boardPlaySize = new Vector3(boardWidth * blockPrefabWidth, boardHeight * blockPrefabWidth, 0.85f);
+        Vector3 boardPlaySize = new Vector3(GameBoard.boardWidth * blockPrefabWidth, GameBoard.boardHeight * blockPrefabWidth, 0.85f);
         Vector3 offset = new Vector3(boardPlaySize.x / 2, boardPlaySize.y / 2, -boardPlaySize.z / 2);
         Gizmos.DrawCube(this.transform.position + offset, boardPlaySize);
     }
@@ -54,28 +46,28 @@ public class BoardManager : MonoBehaviour
     void Start()
     {
         // Initialize and spawn the block prefabs
-        StartCoroutine(SpawnInitialBlocks());
+        //StartCoroutine(SpawnInitialBlocks());
     }
 
-    IEnumerator SpawnInitialBlocks()
-    {
-        Vector3 currentPos = this.transform.position;
-        for (int y = 0; y < boardHeight; y++)
-        {
-            for (int x = 0; x < boardWidth; x++)
-            {
-                Vector3 blockPosition = new Vector3(x, y, 0) + currentPos;
-                blockBoard[x, y] = Instantiate(BlockPrefab, blockPosition, Quaternion.identity, this.transform);
-                blockBoard[x, y].GetComponent<MeshRenderer>().material = BlockMaterials.GetRandomItem();
-                yield return null;
-            }
-        }
-    }
+    //IEnumerator SpawnInitialBlocks()
+    //{
+    //    Vector3 currentPos = this.transform.position;
+    //    for (int y = 0; y < boardHeight; y++)
+    //    {
+    //        for (int x = 0; x < boardWidth; x++)
+    //        {
+    //            Vector3 blockPosition = new Vector3(x, y, 0) + currentPos;
+    //            blockBoard[x, y] = Instantiate(BlockPrefab, blockPosition, Quaternion.identity, this.transform);
+    //            blockBoard[x, y].GetComponent<MeshRenderer>().material = BlockMaterials.GetRandomItem();
+    //            yield return null;
+    //        }
+    //    }
+    //}
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void MoveCursor(InputAction.CallbackContext context)
@@ -90,9 +82,9 @@ public class BoardManager : MonoBehaviour
     {
         if (context.performed)
         {
-            float value = context.ReadValue<float>();
+            int value = (int)context.ReadValue<float>();
             Debug.Log("Move Cursor X Called" + value);
-            CursorPosition += new Vector2(value, 0);
+            CursorPosition += new Vector2Int(value, 0);
         }
     }
 
@@ -100,18 +92,19 @@ public class BoardManager : MonoBehaviour
     {
         if (context.performed)
         {
-            float value = context.ReadValue<float>();
+            int value = (int)context.ReadValue<float>();
             Debug.Log("Move Cursor Y Called" + value);
-            CursorPosition += new Vector2(0, value);
+            CursorPosition += new Vector2Int(0, value);
         }
     }
 
     public void Swap(InputAction.CallbackContext context)
     {
         //if((context.control as UnityEngine.InputSystem.Controls.ButtonControl).wasPressedThisFrame)
-        if(context.performed)
+        if (context.performed)
         {
             Debug.Log("Swap Called");
+            GameBoard.Swap(CursorPosition);
         }
     }
 }
