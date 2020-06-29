@@ -100,12 +100,7 @@ public class Board : MonoBehaviour
     {
         // Swap the two blocks at cursor position and cursor position + (1, 0)
         Vector2Int cursorPositionRight = cursorPosition + Vector2Int.right;
-        Vector3 tmpPos = this[cursorPosition].transform.position;
-        this[cursorPosition].transform.position = this[cursorPositionRight].transform.position;
-        this[cursorPositionRight].transform.position = tmpPos;
-        Block tmp = this[cursorPosition];
-        this[cursorPosition] = this[cursorPositionRight];
-        this[cursorPositionRight] = tmp;
+        ExchangeBlocks(cursorPosition, cursorPositionRight);
 
         // Validate the board
         Block.BlockColor leftColor = this[cursorPosition].Color;
@@ -120,39 +115,55 @@ public class Board : MonoBehaviour
             leftColor != rightColor)
         {
             FloodSearchBlocks(cursorPositionRight, rightColor, minBlockClearCount);
-            //bool[,] visitedBlocks = new bool[boardWidth, boardHeight];
-            //int rightSum = FloodSearchSum(cursorPositionRight, rightColor, ref visitedBlocks);
-            //if (rightSum >= minBlockClearCount)
-            //{
-            //    FloodFillClear(cursorPositionRight);
-            //    for (int y = 0; y < boardHeight; ++y)
-            //    {
-            //        for (int x = 0; x < boardWidth; ++x)
-            //        {
-            //            if (visitedBlocks[x, y] && this[x, y].Color == rightColor)
-            //            {
-            //                this[x, y].enabled = false;
-            //            }
-            //        }
-            //    }
-            //}
         }
+    }
+
+    private void ExchangeBlocks(Vector2Int blockPos1, Vector2Int blockPos2)
+    {
+        // Change positions and references of two blocks
+        Vector3 tmpPos = this[blockPos1].transform.position;
+        this[blockPos1].transform.position = this[blockPos2].transform.position;
+        this[blockPos2].transform.position = tmpPos;
+        Block tmp = this[blockPos1];
+        this[blockPos1] = this[blockPos2];
+        this[blockPos2] = tmp;
     }
 
     private void FloodSearchBlocks(Vector2Int location, Block.BlockColor searchColor, int minBlockClearCount = 3)
     {
         bool[,] visitedBlocks = new bool[boardWidth, boardHeight];
         int sum = FloodSearchSum(location, searchColor, ref visitedBlocks);
+        // Hide/Deactivate the cleared blocks
         if (sum >= minBlockClearCount)
         {
-            //FloodFillClear(cursorPosition);
             for (int y = 0; y < boardHeight; ++y)
             {
                 for (int x = 0; x < boardWidth; ++x)
                 {
-                    if (visitedBlocks[x, y] && this[x, y].Color == searchColor)
+                    if (visitedBlocks[x, y] &&
+                        this[x, y].Color == searchColor &&
+                        this[x, y].State == Block.BlockState.Active)
                     {
-                        this[x, y].gameObject.SetActive(false);
+                        this[x, y].State = Block.BlockState.Empty;
+                    }
+                }
+            }
+        }
+        // Collapse the columns
+        for (int col = 0; col < Width; ++col)
+        {
+            for (int row = 0; row < Height; ++row)
+            {
+                if (this[col, row].State == Block.BlockState.Empty)
+                {
+                    // Search for the first block above that is non-empty
+                    for (int searchRow = row + 1; searchRow < Height; ++searchRow)
+                    {
+                        if (this[col, searchRow].State == Block.BlockState.Active)
+                        {
+                            ExchangeBlocks(new Vector2Int(col, row), new Vector2Int(col, searchRow));
+                            break;
+                        }
                     }
                 }
             }
@@ -165,7 +176,8 @@ public class Board : MonoBehaviour
         visitedBlocks[location.x, location.y] = true;
 
         Block.BlockColor color = this[location].Color;
-        if (searchColor != color)
+        bool blockActive = this[location].State == Block.BlockState.Active;
+        if (searchColor != color || !blockActive)
         {
             return 0;
         }

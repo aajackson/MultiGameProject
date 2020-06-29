@@ -72,10 +72,6 @@ public class BoardManager : MonoBehaviour
 
     public void MoveCursor(InputAction.CallbackContext context)
     {
-        if (context.performed)
-        {
-            Debug.Log("Move Cursor Called" + context.ReadValue<Vector2>());
-        }
     }
 
     public void MoveCursorX(InputAction.CallbackContext context)
@@ -83,8 +79,7 @@ public class BoardManager : MonoBehaviour
         if (context.performed)
         {
             int value = (int)context.ReadValue<float>();
-            Debug.Log("Move Cursor X Called" + value);
-            CursorPosition += new Vector2Int(value, 0);
+            CursorPosition += Vector2Int.right * value;
         }
     }
 
@@ -93,8 +88,7 @@ public class BoardManager : MonoBehaviour
         if (context.performed)
         {
             int value = (int)context.ReadValue<float>();
-            Debug.Log("Move Cursor Y Called" + value);
-            CursorPosition += new Vector2Int(0, value);
+            CursorPosition += Vector2Int.up * value;
         }
     }
 
@@ -103,7 +97,6 @@ public class BoardManager : MonoBehaviour
         //if((context.control as UnityEngine.InputSystem.Controls.ButtonControl).wasPressedThisFrame)
         if (context.performed)
         {
-            Debug.Log("Swap Called");
             GameBoard.Swap(CursorPosition);
         }
     }

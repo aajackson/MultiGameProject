@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Block : MonoBehaviour
 {
@@ -14,11 +15,36 @@ public class Block : MonoBehaviour
     public enum BlockState
     {
         Active,
-        Empty, 
-        Disabled,
+        Empty,
     }
 
-    public BlockState State;
+    public BlockState State
+    {
+        get { return state; }
+        set
+        {
+            state = value;
+            switch (value)
+            {
+                case BlockState.Active:
+                    SetVisible(true);
+                    break;
+                case BlockState.Empty:
+                    SetVisible(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private void SetVisible(bool visible)
+    {
+        GetComponent<MeshRenderer>().enabled = visible;
+    }
+
+    [SerializeField]
+    private BlockState state;
     public BlockColor Color
     {
         get { return color; }
@@ -49,6 +75,6 @@ public class Block : MonoBehaviour
     }
     [SerializeField]
     private BlockColor color;
-
+    
     public BlockMaterials BlockMaterials = null;
 }
