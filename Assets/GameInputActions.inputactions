@@ -246,6 +246,17 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "",
+                    "id": "86cc75d5-a742-435b-9a14-291ca8b29ddd",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "Horizontal",
                     "id": "46a704fa-c0c2-4b49-8a90-284cf1829d5d",
                     "path": "1DAxis",

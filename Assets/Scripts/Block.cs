@@ -2,7 +2,7 @@
 
 public class Block : MonoBehaviour
 {
-    enum BlockColor
+    public enum BlockColor
     {
         Red,
         Orange,
@@ -11,5 +11,44 @@ public class Block : MonoBehaviour
         Blue,
     }
 
+    public enum BlockState
+    {
+        Active,
+        Empty, 
+        Disabled,
+    }
 
+    public BlockState State;
+    public BlockColor Color
+    {
+        get { return color; }
+        set
+        {
+            color = value;
+            Material newMaterial = null;
+            switch (value)
+            {
+                case BlockColor.Red:
+                    newMaterial = BlockMaterials.Materials[0];
+                    break;
+                case BlockColor.Orange:
+                    newMaterial = BlockMaterials.Materials[1];
+                    break;
+                case BlockColor.Yellow:
+                    newMaterial = BlockMaterials.Materials[2];
+                    break;
+                case BlockColor.Green:
+                    newMaterial = BlockMaterials.Materials[3];
+                    break;
+                case BlockColor.Blue:
+                    newMaterial = BlockMaterials.Materials[4];
+                    break;
+            }
+            GetComponent<MeshRenderer>().material = newMaterial;
+        }
+    }
+    [SerializeField]
+    private BlockColor color;
+
+    public BlockMaterials BlockMaterials = null;
 }
