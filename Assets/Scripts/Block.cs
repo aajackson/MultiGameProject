@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Block : MonoBehaviour
@@ -11,6 +12,15 @@ public class Block : MonoBehaviour
         Green,
         Blue,
     }
+
+    public readonly static List<BlockColor> AllBlockColors = new List<BlockColor>()
+    {
+        BlockColor.Red,
+        BlockColor.Orange,
+        BlockColor.Yellow,
+        BlockColor.Green,
+        BlockColor.Blue
+    };
 
     public enum BlockState
     {
@@ -75,6 +85,6 @@ public class Block : MonoBehaviour
     }
     [SerializeField]
     private BlockColor color;
-    
+
     public BlockMaterials BlockMaterials = null;
 }

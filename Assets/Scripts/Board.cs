@@ -10,26 +10,34 @@ public class Board : MonoBehaviour
     public int Width { get { return boardWidth; } }
     public int Height { get { return boardHeight; } }
 
+    public bool SpawnActive = true;
+    public float SpawnDelay = 15.0f;
     [SerializeField]
     private int boardWidth  = 5;
     [SerializeField]
     private int boardHeight = 12;
+
+    public void InitializeValidBoard()
+    {
+        // Set block colors and remove one block from the top
+    }
+
     public Block BlockPrefab = null;
     [HideInInspector]
     public List<Block> BlockList = new List<Block>();
-
     public BlockMaterials BlockMaterials = null;
+    private Coroutine spawnBlocksCoroutine;
 
     private void OnValidate()
     {
         if (BlockList.Count != boardWidth * boardHeight)
         {
-            
-            UnityEditor.EditorApplication.delayCall += () =>
-            {
-                DestroyBlocks();
-                InstantiateBlocks();
-            };
+            Debug.Log($"Validating! {BlockList.Count} != {boardWidth * boardHeight} ({boardWidth} * {boardHeight})");
+            //UnityEditor.EditorApplication.delayCall += () =>
+            //{
+            //    DestroyBlocks();
+            //    InstantiateBlocks();
+            //};
         }
     }
  
@@ -50,7 +58,6 @@ public class Board : MonoBehaviour
         DestroyImmediate(block);
     }
 
-
     public Block this[int x, int y]
     {
         get
@@ -70,6 +77,69 @@ public class Board : MonoBehaviour
     {
         get { return this[pos.x, pos.y]; }
         set { this[pos.x, pos.y] = value; }
+    }
+
+    private void Start()
+    {
+        foreach (Block block in BlockList)
+        {
+            block.State = Block.BlockState.Empty;
+        }
+        spawnBlocksCoroutine = StartCoroutine(SpawnBlocks());
+    }
+
+    private IEnumerator SpawnBlocks()
+    {
+        // Initial spawn delay
+        yield return new WaitForSeconds(SpawnDelay);
+
+        // Stop spawning and game over if top row contains an active one
+        for (int col = 0; col < Width; ++col)
+        {
+            if (this[col, Height - 1].State == Block.BlockState.Active)
+            {
+                SpawnActive = false;
+            }
+        }
+
+        while (SpawnActive)
+        {
+            for (int col = 0; col < Width; ++col)
+            {
+                for (int row = Height - 1; row > 0; --row)
+                {
+                    ExchangeBlocks(new Vector2Int(col, row), new Vector2Int(col, row - 1));
+                }
+
+                // Spawn blocks that are different than the color to their left or above
+                List<Block.BlockColor> validColors = new List<Block.BlockColor>(Block.AllBlockColors);
+                if (LocationValid(col - 1, 0))
+                {
+                    // Remove left color from pool
+                    validColors.Remove(this[col - 1, 0].Color);
+                }
+                if (this[col, 1].State == Block.BlockState.Active)
+                {
+                    // Remove up color from pool
+                    validColors.Remove(this[col, 1].Color);
+                }
+                this[col, 0].Color = validColors.GetRandomItem();
+                this[col, 0].State = Block.BlockState.Active;
+            }
+
+            yield return new WaitForSeconds(SpawnDelay);
+
+            // Stop spawning and game over if top row contains an active one
+            for (int col = 0; col < Width; ++col)
+            {
+                if (this[col, Height - 1].State == Block.BlockState.Active)
+                {
+                    SpawnActive = false;
+                }
+            }
+        } // while (SpawnActive)
+
+        Debug.Log("Spawning stopped! Game Over!");
     }
 
     public void InstantiateBlocks()
@@ -208,6 +278,11 @@ public class Board : MonoBehaviour
         }
 
         return sum;
+    }
+
+    private bool LocationValid(int x, int y)
+    {
+        return LocationValid(new Vector2Int(x, y));
     }
 
     private bool LocationValid(Vector2Int location)
