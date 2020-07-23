@@ -112,7 +112,8 @@ public class Board : MonoBehaviour
                 }
 
                 // Spawn blocks that are different than the color to their left or above
-                List<Block.BlockColor> validColors = new List<Block.BlockColor>(Block.AllBlockColors);
+                Block.BlockColor[] blockColors = (Block.BlockColor[])Enum.GetValues(typeof(Block.BlockColor));
+                List<Block.BlockColor> validColors = new List<Block.BlockColor>(blockColors);
                 if (LocationValid(col - 1, 0))
                 {
                     // Remove left color from pool

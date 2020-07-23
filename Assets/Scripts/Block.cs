@@ -13,15 +13,6 @@ public class Block : MonoBehaviour
         Blue,
     }
 
-    public readonly static List<BlockColor> AllBlockColors = new List<BlockColor>()
-    {
-        BlockColor.Red,
-        BlockColor.Orange,
-        BlockColor.Yellow,
-        BlockColor.Green,
-        BlockColor.Blue
-    };
-
     public enum BlockState
     {
         Active,
